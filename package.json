@@ -1,0 +1,11 @@
+{
+  "name": "kinetix-motion-showreel-2026",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "description": "15-Second 60FPS Motion Graphics Showreel built with React, Three.js, Custom GLSL Shaders, and GSAP",
+  "scripts": {
+    "start": "npx --yes serve . -l 3000",
+    "dev": "npx --yes vite"
+  }
+}
