@@ -9,6 +9,8 @@
 </p>
 
 <p align="center">
+  <a href="https://reikama414.github.io/kinetix-motion-showreel-2026/">線上 Demo</a>
+  ·
   <a href="https://github.com/ReiKama414/kinetix-motion-showreel-2026">Star</a>
   ·
   <a href="https://reikama414.vercel.app/">個人網站</a>
@@ -123,6 +125,7 @@ kinetix-motion-showreel-2026/
 
 | | |
 | --- | --- |
+| 線上 Demo | [GitHub Pages](https://reikama414.github.io/kinetix-motion-showreel-2026/) |
 | 倉庫 | [kinetix-motion-showreel-2026](https://github.com/ReiKama414/kinetix-motion-showreel-2026) |
 | 作者 | [ReiKama414](https://github.com/ReiKama414) |
 | 作品集 | [個人網站](https://reikama414.vercel.app/) |
