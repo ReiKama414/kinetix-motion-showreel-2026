@@ -31,7 +31,7 @@
 ## 亮點
 
 - **五段連續敘事** — GENESIS → POLYMORPH → VORTEX SWARM → LIQUID CHROME → CONVERGENCE，共 15.0 秒
-- **全螢幕舞台** — `100dvh` 畫布搭配 `object-contain`，HUD 文字較不易被裁切
+- **全螢幕舞台** — `100dvh` 畫布搭配 `object-cover`，左右滿版延伸
 - **右側 icon 列** — 播放、加速倒轉、音軌、運鏡、HUD、遮幅、下一段、速度、LUT、匯出
 - **播放速度** — 清楚可選 `0.5x` · `1x` · `1.5x` · `2x`
 - **加速倒轉重播** — 高速倒回 `00:00` 後再正向播放

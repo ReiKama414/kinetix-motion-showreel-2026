@@ -31,7 +31,7 @@ A motion showreel should play in the browser as a live stage, not only as a bake
 ## Highlights
 
 - **Five continuous acts** — GENESIS → POLYMORPH → VORTEX SWARM → LIQUID CHROME → CONVERGENCE in one 15.0s timeline
-- **Fullscreen stage** — `100dvh` canvas with `object-contain`, so HUD text stays readable
+- **Fullscreen stage** — `100dvh` canvas with `object-cover` for edge-to-edge fill
 - **Icon rail** — Play, fast rewind, audio, camera, HUD, letterbox, next act, speed, LUT, export
 - **Playback speed** — Clear `0.5x` · `1x` · `1.5x` · `2x` menu on the rail
 - **Fast rewind restart** — Scrubs backward at high speed, then resumes forward from `00:00`
