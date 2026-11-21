@@ -1602,7 +1602,7 @@
               ctx.restore();
             }
 
-            // 3. Live 3D-to-2D Projected Motion Graphics Vertex Callouts
+            // 3. Screen-space callouts (safe margins) + optional 3D reticle link
             if (state.showHudOverlay) {
               ctx.save();
               ctx.globalCompositeOperation = 'screen';
@@ -1612,6 +1612,17 @@
                 'PAR_03 // 12K_SWARM',
                 'CAM_04 // ANAMORPHIC'
               ];
+              // Fixed to canvas/screen safe area so labels stay readable under object-cover
+              const calloutPadL = 160;
+              const calloutPadR = 240;
+              const calloutPadY = state.showLetterbox ? 150 : 100;
+              const screenAnchors = [
+                { x: calloutPadL, y: calloutPadY + 72, align: 'left' },
+                { x: W - calloutPadR, y: calloutPadY + 96, align: 'right' },
+                { x: calloutPadL, y: H - calloutPadY - 110, align: 'left' },
+                { x: W - calloutPadR, y: H - calloutPadY - 88, align: 'right' }
+              ];
+
               for (let k = 0; k < 4; k++) {
                 const theta = t * 0.9 + k * (Math.PI * 0.5);
                 const phi = Math.sin(t * 0.7 + k * 1.4) * 0.8;
@@ -1623,46 +1634,60 @@
                 );
                 projVec.project(cam);
 
-                if (projVec.z < 1.0) {
-                  const sx = (projVec.x * 0.5 + 0.5) * W;
-                  const sy = (-projVec.y * 0.5 + 0.5) * H;
-                  const offsetDir = sx >= W * 0.5 ? 1 : -1;
-                  const elbowX = sx + offsetDir * 64;
-                  const elbowY = sy - 32;
-                  const endX = elbowX + offsetDir * 135;
+                const slot = screenAnchors[k];
+                const labelX = slot.x;
+                const labelY = slot.y;
+                const alignLeft = slot.align === 'left';
+                const tickDir = alignLeft ? 1 : -1;
 
-                  // Target reticle on 3D vertex
-                  ctx.strokeStyle = k % 2 === 0 ? rgb1 : rgb2;
-                  ctx.lineWidth = 1.4;
-                  ctx.globalAlpha = 0.72;
+                let sx = labelX + tickDir * 48;
+                let sy = labelY + 8;
+                let linked = false;
+                if (projVec.z < 1.0) {
+                  const px = (projVec.x * 0.5 + 0.5) * W;
+                  const py = (-projVec.y * 0.5 + 0.5) * H;
+                  // Only draw 3D reticle when it stays inside the safe screen frame
+                  if (
+                    px > calloutPadL * 0.55 &&
+                    px < W - calloutPadR * 0.55 &&
+                    py > calloutPadY * 0.7 &&
+                    py < H - calloutPadY * 0.7
+                  ) {
+                    sx = px;
+                    sy = py;
+                    linked = true;
+                  }
+                }
+
+                ctx.strokeStyle = k % 2 === 0 ? rgb1 : rgb2;
+                ctx.lineWidth = 1.4;
+                ctx.globalAlpha = 0.72;
+
+                if (linked) {
                   ctx.beginPath();
                   ctx.arc(sx, sy, 5 + beatPulse * 4, 0, Math.PI * 2);
                   ctx.stroke();
-
-                  // Leader spline
-                  ctx.beginPath();
-                  ctx.moveTo(sx, sy);
-                  ctx.lineTo(elbowX, elbowY);
-                  ctx.lineTo(endX, elbowY);
-                  ctx.stroke();
-
-                  // Coordinate & telemetry label
-                  ctx.font = '600 11px ' + FONT_MONO;
-                  ctx.fillStyle = '#FFFFFF';
-                  ctx.textAlign = offsetDir > 0 ? 'left' : 'right';
-                  ctx.fillText(
-                    anchorLabels[k],
-                    elbowX + offsetDir * 6,
-                    elbowY - 6
-                  );
-                  ctx.fillStyle = k % 2 === 0 ? rgb1 : rgb2;
-                  ctx.font = '400 10px ' + FONT_MONO;
-                  ctx.fillText(
-                    `XYZ [${projVec.x.toFixed(2)}, ${projVec.y.toFixed(2)}, ${projVec.z.toFixed(2)}]`,
-                    elbowX + offsetDir * 6,
-                    elbowY + 12
-                  );
                 }
+
+                const elbowX = labelX + tickDir * 18;
+                const elbowY = labelY;
+                ctx.beginPath();
+                ctx.moveTo(sx, sy);
+                ctx.lineTo(elbowX, elbowY);
+                ctx.lineTo(labelX, labelY);
+                ctx.stroke();
+
+                ctx.font = '600 11px ' + FONT_MONO;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textAlign = alignLeft ? 'left' : 'right';
+                ctx.fillText(anchorLabels[k], labelX, labelY - 6);
+                ctx.fillStyle = k % 2 === 0 ? rgb1 : rgb2;
+                ctx.font = '400 10px ' + FONT_MONO;
+                ctx.fillText(
+                  `XYZ [${projVec.x.toFixed(2)}, ${projVec.y.toFixed(2)}, ${projVec.z.toFixed(2)}]`,
+                  labelX,
+                  labelY + 12
+                );
               }
               ctx.restore();
             }
