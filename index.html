@@ -117,7 +117,7 @@
       visibility: hidden;
       pointer-events: none;
       transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
-      z-index: 60;
+      z-index: 80;
     }
     .kx-tip::after {
       content: '';
@@ -139,13 +139,17 @@
     }
     .icon-rail-shell {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
+      top: 12px;
+      right: 12px;
       z-index: 40;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 8px;
+    }
+    .mobile-dock,
+    .rail-carousel {
+      display: contents;
     }
     .icon-rail {
       display: flex;
@@ -153,16 +157,63 @@
       gap: 8px;
       padding: 10px;
       border-radius: 18px;
-      transform-origin: top right;
-      transition:
-        opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        max-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        padding 0.28s ease,
-        border-color 0.28s ease;
     }
-    .rail-toggle {
+    .rail-toggle,
+    .rail-handle,
+    .rail-fade {
       display: none;
+    }
+    .rail-toggle-label {
+      display: none;
+    }
+    @media (min-width: 769px) {
+      .rail-toggle {
+        display: inline-flex;
+        order: -1;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(8, 8, 14, 0.82);
+        color: #e4e4e7;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+      .rail-toggle.is-on {
+        background: rgba(212,255,0,0.14);
+        border-color: rgba(212,255,0,0.45);
+        color: #D4FF00;
+      }
+      .icon-rail {
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        transform: translateX(14px) scale(0.98);
+        padding-top: 0;
+        padding-bottom: 0;
+        border-color: transparent;
+        pointer-events: none;
+        transform-origin: top right;
+        transition:
+          max-height 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.28s ease,
+          transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+          padding 0.28s ease,
+          border-color 0.28s ease;
+      }
+      .icon-rail-shell.is-open .icon-rail {
+        /* visible so left-side tooltips are not clipped by the rail */
+        overflow: visible;
+        max-height: 720px;
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        padding: 10px;
+        border-color: rgba(255, 255, 255, 0.1);
+        pointer-events: auto;
+      }
+      .icon-rail-shell {
+        overflow: visible;
+      }
     }
     .speed-btn {
       width: 44px;
@@ -190,67 +241,322 @@
       z-index: 70;
       min-width: 72px;
     }
+    .volume-menu {
+      position: absolute;
+      right: calc(100% + 12px);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 176px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(8, 8, 14, 0.96);
+      border: 1px solid rgba(212, 255, 0, 0.35);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+      z-index: 70;
+    }
+    .volume-menu-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      color: #D4FF00;
+    }
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 20px;
+      margin: 0;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+    }
+    .volume-slider::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+    }
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      margin-top: -5px;
+      border-radius: 50%;
+      background: #D4FF00;
+      border: 0;
+      box-shadow: 0 0 0 3px rgba(212,255,0,0.18);
+      cursor: pointer;
+    }
+    .volume-slider::-moz-range-track {
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      border: 0;
+    }
+    .volume-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #D4FF00;
+      border: 0;
+      box-shadow: 0 0 0 3px rgba(212,255,0,0.18);
+      cursor: pointer;
+    }
+    .volume-mute {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: #e4e4e7;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .volume-mute:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .brand-lockup {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      pointer-events: none;
+    }
+    .rail-page {
+      display: contents;
+    }
+    .rail-page-spacer,
+    .rail-dots {
+      display: none;
+    }
     @media (max-width: 768px) {
       .icon-rail-shell {
         top: auto;
-        right: 50%;
-        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-        left: auto;
-        transform: translateX(50%);
+        right: 0;
+        left: 0;
+        bottom: 0;
+        transform: none;
+        align-items: stretch;
+        width: 100%;
+        z-index: 60;
+        padding: 0 12px calc(12px + env(safe-area-inset-bottom, 0px));
+        pointer-events: none;
+      }
+      .mobile-dock {
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        flex-direction: column-reverse;
-        width: min(100vw - 20px, 560px);
+        gap: 0;
+        width: min(100%, 360px);
+        margin: 0 auto;
+        pointer-events: auto;
       }
       .rail-toggle {
-        display: inline-flex;
-        flex-shrink: 0;
+        display: none;
+        width: auto;
+        min-width: 88px;
+        height: 42px;
+        padding: 0 16px;
+        gap: 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(212,255,0,0.45);
+        background: rgba(8, 8, 12, 0.96);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        color: #D4FF00;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.55);
       }
-      .icon-rail {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 6px;
+      .icon-rail-shell:not(.is-open) .rail-toggle {
+        display: inline-flex;
+      }
+      .rail-toggle-label {
+        display: inline;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .rail-carousel {
+        display: flex;
+        flex-direction: column;
+        position: relative;
         width: 100%;
-        max-width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        transform-origin: bottom center;
+        border-radius: 24px;
+        background: rgba(6, 6, 10, 0.96);
+        border: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(28px);
+        -webkit-backdrop-filter: blur(28px);
+        box-shadow: 0 18px 48px rgba(0,0,0,0.62);
+        overflow: hidden;
         max-height: 0;
         opacity: 0;
-        transform: translateY(14px) scale(0.98);
-        padding-top: 0;
-        padding-bottom: 0;
-        border-color: transparent;
+        transform: translateY(22px) scale(0.96);
         pointer-events: none;
+        transition:
+          max-height 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 0.28s ease,
+          transform 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+          border-color 0.28s ease;
+      }
+      .icon-rail-shell.is-open .rail-carousel {
+        max-height: 132px;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+        border-color: rgba(212,255,0,0.22);
+      }
+      .rail-handle {
+        display: none;
+      }
+      .icon-rail-shell.is-open .rail-handle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 22px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+      .rail-handle-bar {
+        width: 34px;
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.35);
+      }
+      .rail-fade {
+        display: none;
+      }
+      .icon-rail {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scroll-padding: 0;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+        scrollbar-width: none;
+        overscroll-behavior-x: contain;
       }
       .icon-rail::-webkit-scrollbar {
         display: none;
       }
-      .icon-rail-shell.is-open .icon-rail {
-        max-height: 72px;
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        padding: 10px;
-        border-color: rgba(255, 255, 255, 0.1);
-        pointer-events: auto;
+      .rail-page {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 100%;
+        box-sizing: border-box;
+        padding: 2px 14px 8px;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
       }
-      .icon-rail-shell:not(.is-open) .icon-rail {
-        margin: 0;
+      .rail-page-spacer {
+        display: block;
+        min-height: 48px;
+      }
+      .rail-dots {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        padding: 0 0 10px;
+      }
+      .rail-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        border: 0;
+        padding: 0;
+        background: rgba(255,255,255,0.28);
+        cursor: pointer;
+      }
+      .rail-dot.is-on {
+        width: 16px;
+        background: #D4FF00;
+      }
+      .icon-rail .icon-btn,
+      .icon-rail .speed-btn {
+        width: 100%;
+        height: 48px;
+        min-height: 48px;
+        border-radius: 16px;
+        border: 0;
+        background: rgba(255,255,255,0.08);
+        color: #f4f4f5;
+        box-shadow: none;
+        transform: none;
+      }
+      .icon-rail .icon-btn:hover,
+      .icon-rail .speed-btn:hover {
+        transform: none;
+        background: rgba(255,255,255,0.12);
+      }
+      .icon-rail .icon-btn.is-on,
+      .icon-rail .speed-btn.is-on {
+        background: rgba(212,255,0,0.2);
+        color: #D4FF00;
+        border: 0;
+      }
+      .icon-rail .icon-btn.is-danger {
+        background: rgba(255,30,86,0.22);
+        color: #FF6B8A;
+        border: 0;
       }
       .kx-tip {
         display: none;
       }
+      .brand-lockup {
+        top: calc(8px + env(safe-area-inset-top, 0px));
+        left: calc(10px + env(safe-area-inset-left, 0px));
+      }
+      /* Portaled to document.body — escapes transform/backdrop-filter clipping */
+      .volume-menu,
       .speed-menu {
-        right: 50%;
-        left: auto;
-        top: auto;
-        bottom: calc(100% + 10px);
-        transform: translateX(50%);
+        position: fixed !important;
+        left: 50% !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: calc(152px + env(safe-area-inset-bottom, 0px)) !important;
+        transform: translateX(-50%) !important;
+        z-index: 9999 !important;
+      }
+      .speed-menu {
         flex-direction: row;
         min-width: 0;
+        border-radius: 16px;
+        padding: 6px;
       }
     }
     .speed-option {
@@ -505,6 +811,7 @@
           this.masterGain = null;
           this.streamDest = null;
           this.enabled = false;
+          this.volume = 0.2;
           this.lastBeatIndex = -1;
           this.lastSixteenthIndex = -1;
           this.lastActIndex = -1;
@@ -515,13 +822,16 @@
             if (this.ctx.state === 'suspended') {
               this.ctx.resume();
             }
+            if (this.masterGain) {
+              this.masterGain.gain.value = this.enabled ? this.volume : 0;
+            }
             return;
           }
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
           if (!AudioCtx) return;
           this.ctx = new AudioCtx();
           this.masterGain = this.ctx.createGain();
-          this.masterGain.gain.value = 0.32;
+          this.masterGain.gain.value = this.enabled ? this.volume : 0;
           this.masterGain.connect(this.ctx.destination);
 
           if (this.ctx.createMediaStreamDestination) {
@@ -530,10 +840,20 @@
           }
         }
 
+        setVolume(val) {
+          this.volume = Math.max(0, Math.min(1, val));
+          if (this.masterGain) {
+            this.masterGain.gain.value = this.enabled ? this.volume : 0;
+          }
+        }
+
         setEnabled(val) {
           this.enabled = val;
           if (val) {
             this.init();
+          }
+          if (this.masterGain) {
+            this.masterGain.gain.value = val ? this.volume : 0;
           }
         }
 
@@ -1110,7 +1430,9 @@
         const [isPlaying, setIsPlaying] = useState(true);
         const [isRewinding, setIsRewinding] = useState(false);
         const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
-        const [mobileRailOpen, setMobileRailOpen] = useState(false);
+        const [mobileRailOpen, setMobileRailOpen] = useState(true);
+        const [railPage, setRailPage] = useState(0);
+        const iconRailRef = useRef(null);
         const isLooping = true;
         const [playbackRate, setPlaybackRate] = useState(1.0);
         const SPEED_PRESETS = [0.5, 1, 1.5, 2];
@@ -1118,6 +1440,11 @@
         const [activeActIdx, setActiveActIdx] = useState(0);
         const [fpsCount, setFpsCount] = useState(60);
         const [audioEnabled, setAudioEnabled] = useState(false);
+        const [audioVolume, setAudioVolume] = useState(0.2);
+        const [volumeMenuOpen, setVolumeMenuOpen] = useState(false);
+        const [isMobileUi, setIsMobileUi] = useState(
+          () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches
+        );
         const [showHudOverlay, setShowHudOverlay] = useState(true);
         const [showLetterbox, setShowLetterbox] = useState(true);
         const [cameraMode, setCameraMode] = useState('director');
@@ -1164,8 +1491,21 @@
           if (!audioEngineRef.current) {
             audioEngineRef.current = new ProceduralAudioEngine();
           }
+          audioEngineRef.current.setVolume(audioVolume);
           audioEngineRef.current.setEnabled(audioEnabled);
-        }, [audioEnabled]);
+        }, [audioEnabled, audioVolume]);
+
+        useEffect(() => {
+          const mq = window.matchMedia('(max-width: 768px)');
+          const sync = () => setIsMobileUi(mq.matches);
+          sync();
+          if (mq.addEventListener) mq.addEventListener('change', sync);
+          else mq.addListener(sync);
+          return () => {
+            if (mq.removeEventListener) mq.removeEventListener('change', sync);
+            else mq.removeListener(sync);
+          };
+        }, []);
 
         const seekTo = useCallback((targetSec) => {
           const clamped = clamp(targetSec, 0, DURATION);
@@ -1209,8 +1549,30 @@
           setIsPlaying(true);
         }, []);
 
-        const handleToggleAudio = useCallback(() => {
-          setAudioEnabled((prev) => !prev);
+        const handleToggleAudio = useCallback((e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          setSpeedMenuOpen(false);
+          if (!audioEnabled) {
+            setAudioEnabled(true);
+            setVolumeMenuOpen(true);
+            return;
+          }
+          setVolumeMenuOpen((open) => !open);
+        }, [audioEnabled]);
+
+        const handleVolumeChange = useCallback((value) => {
+          const next = Math.max(0, Math.min(1, Number(value)));
+          setAudioVolume(next);
+          if (next <= 0.001) {
+            setAudioEnabled(false);
+            setVolumeMenuOpen(false);
+            return;
+          }
+          setAudioEnabled(true);
+          if (audioEngineRef.current) {
+            audioEngineRef.current.setVolume(next);
+            audioEngineRef.current.setEnabled(true);
+          }
         }, []);
 
         const handleStartVideoExport = useCallback(() => {
@@ -1632,9 +1994,53 @@
           // ===================================================================
           // 2D KINETIC TYPOGRAPHY, 3D VERTEX CALLOUTS & FLUID TRANSITIONS
           // ===================================================================
+          function getCoverVisibleRect(canvasW, canvasH, viewW, viewH) {
+            const canvasAspect = canvasW / canvasH;
+            const viewAspect = Math.max(0.01, viewW / Math.max(1, viewH));
+            if (viewAspect > canvasAspect) {
+              const visibleH = canvasW / viewAspect;
+              return {
+                x: 0,
+                y: (canvasH - visibleH) * 0.5,
+                w: canvasW,
+                h: visibleH,
+                narrow: false
+              };
+            }
+            const visibleW = canvasH * viewAspect;
+            return {
+              x: (canvasW - visibleW) * 0.5,
+              y: 0,
+              w: visibleW,
+              h: canvasH,
+              narrow: viewAspect < 0.75
+            };
+          }
+
           function renderCompositeOverlay(ctx, t, beatPulse, transitionSurge, pal, state, cam) {
             const W = WIDTH;
             const H = HEIGHT;
+            const viewW = masterCanvas.clientWidth || window.innerWidth || W;
+            const viewH = masterCanvas.clientHeight || window.innerHeight || H;
+            const vis = getCoverVisibleRect(W, H, viewW, viewH);
+            const safeXLeft = Math.max(vis.narrow ? 22 : 28, vis.w * (vis.narrow ? 0.045 : 0.018));
+            const safeXRight = Math.max(vis.narrow ? 28 : 36, vis.w * (vis.narrow ? 0.07 : 0.05));
+            const safeY = Math.max(vis.narrow ? 28 : 36, vis.h * (vis.narrow ? 0.06 : 0.05));
+            const dockReserve = vis.narrow ? Math.min(150, vis.h * 0.18) : 36;
+            // Keep HUD below logo/menu chrome, but pin left content to the screen-left edge
+            const headerCssTop = vis.narrow ? 8 : 12;
+            const headerCssH = headerCssTop + 44 + (vis.narrow ? 10 : 14);
+            const menuCssW = vis.narrow ? 0 : (12 + 44 + 16);
+            const headerClearY = vis.y + (headerCssH / Math.max(1, viewH)) * vis.h;
+            const menuClearX = (menuCssW / Math.max(1, viewW)) * vis.w;
+            const frameL = vis.x + safeXLeft;
+            const frameR = vis.x + vis.w - Math.max(safeXRight, menuClearX);
+            const frameT = Math.max(vis.y + safeY, headerClearY);
+            const frameB = vis.y + vis.h - safeY - dockReserve;
+            const frameW = Math.max(40, frameR - frameL);
+            const logoClearY = vis.narrow
+              ? Math.max(frameT + 24, vis.y + ((headerCssH + 8) / Math.max(1, viewH)) * vis.h)
+              : frameT;
             const actIdx = Math.min(4, Math.floor(t / 3.0));
             const act = ACTS[actIdx];
             const actLocalTime = t - act.start; // 0.0 -> 3.0
@@ -1699,16 +2105,22 @@
                 'PAR_03 // 12K_SWARM',
                 'CAM_04 // ANAMORPHIC'
               ];
-              // Fixed to canvas/screen safe area so labels stay readable under object-cover
-              const calloutPadL = 160;
-              const calloutPadR = 240;
-              const calloutPadY = state.showLetterbox ? 150 : 100;
-              const screenAnchors = [
-                { x: calloutPadL, y: calloutPadY + 72, align: 'left' },
-                { x: W - calloutPadR, y: calloutPadY + 96, align: 'right' },
-                { x: calloutPadL, y: H - calloutPadY - 110, align: 'left' },
-                { x: W - calloutPadR, y: H - calloutPadY - 88, align: 'right' }
-              ];
+              // Keep labels inside the object-cover visible band (critical on portrait phones)
+              const yTop = vis.narrow ? logoClearY : frameT + 72;
+              const yBot = frameB - (vis.narrow ? 36 : 70);
+              const screenAnchors = vis.narrow
+                ? [
+                    { x: frameL, y: yTop, align: 'left' },
+                    { x: frameR, y: frameT + 52, align: 'right' },
+                    { x: frameL, y: yBot - 44, align: 'left' },
+                    { x: frameR, y: yBot, align: 'right' }
+                  ]
+                : [
+                    { x: frameL, y: yTop, align: 'left' },
+                    { x: frameR, y: yTop + 24, align: 'right' },
+                    { x: frameL, y: yBot, align: 'left' },
+                    { x: frameR, y: yBot + 22, align: 'right' }
+                  ];
 
               for (let k = 0; k < 4; k++) {
                 const theta = t * 0.9 + k * (Math.PI * 0.5);
@@ -1727,19 +2139,13 @@
                 const alignLeft = slot.align === 'left';
                 const tickDir = alignLeft ? 1 : -1;
 
-                let sx = labelX + tickDir * 48;
+                let sx = labelX + tickDir * (vis.narrow ? 28 : 48);
                 let sy = labelY + 8;
                 let linked = false;
                 if (projVec.z < 1.0) {
                   const px = (projVec.x * 0.5 + 0.5) * W;
                   const py = (-projVec.y * 0.5 + 0.5) * H;
-                  // Only draw 3D reticle when it stays inside the safe screen frame
-                  if (
-                    px > calloutPadL * 0.55 &&
-                    px < W - calloutPadR * 0.55 &&
-                    py > calloutPadY * 0.7 &&
-                    py < H - calloutPadY * 0.7
-                  ) {
+                  if (px > frameL && px < frameR && py > frameT && py < frameB) {
                     sx = px;
                     sy = py;
                     linked = true;
@@ -1764,17 +2170,19 @@
                 ctx.lineTo(labelX, labelY);
                 ctx.stroke();
 
-                ctx.font = '600 11px ' + FONT_MONO;
+                ctx.font = (vis.narrow ? '600 10px ' : '600 11px ') + FONT_MONO;
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textAlign = alignLeft ? 'left' : 'right';
                 ctx.fillText(anchorLabels[k], labelX, labelY - 6);
-                ctx.fillStyle = k % 2 === 0 ? rgb1 : rgb2;
-                ctx.font = '400 10px ' + FONT_MONO;
-                ctx.fillText(
-                  `XYZ [${projVec.x.toFixed(2)}, ${projVec.y.toFixed(2)}, ${projVec.z.toFixed(2)}]`,
-                  labelX,
-                  labelY + 12
-                );
+                if (!vis.narrow) {
+                  ctx.fillStyle = k % 2 === 0 ? rgb1 : rgb2;
+                  ctx.font = '400 10px ' + FONT_MONO;
+                  ctx.fillText(
+                    `XYZ [${projVec.x.toFixed(2)}, ${projVec.y.toFixed(2)}, ${projVec.z.toFixed(2)}]`,
+                    labelX,
+                    labelY + 12
+                  );
+                }
               }
               ctx.restore();
             }
@@ -1789,14 +2197,19 @@
             ctx.globalCompositeOperation = 'overlay';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            const bgFontSize = 210 + beatPulse * 15;
+            const bgFontSize = Math.min(
+              210 + beatPulse * 15,
+              frameW * (vis.narrow ? 0.28 : 0.22)
+            );
             ctx.font = `800 ${bgFontSize}px ${FONT_UI}`;
-            const trackingShift = (actProgress - 0.5) * 95;
+            const trackingShift = (actProgress - 0.5) * (vis.narrow ? 36 : 95);
+            const heroCX = vis.x + vis.w * 0.5;
+            const heroCY = vis.y + vis.h * (vis.narrow ? 0.42 : 0.5);
 
-            if (actIdx === 1) {
+            if (!vis.narrow && actIdx === 1) {
               // Act II: Diagonal sheared ghost ribbons
               ctx.save();
-              ctx.translate(W * 0.5, H * 0.5);
+              ctx.translate(heroCX, heroCY);
               ctx.rotate(-0.14);
               ctx.strokeStyle = `rgba(0, 240, 255, ${0.18 * visibility})`;
               ctx.lineWidth = 2.0;
@@ -1804,12 +2217,12 @@
               ctx.strokeStyle = `rgba(255, 30, 86, ${0.18 * visibility})`;
               ctx.strokeText('PROCEDURAL VERTEX SHADER', -trackingShift * 1.4, 220);
               ctx.restore();
-            } else if (actIdx === 2) {
+            } else if (!vis.narrow && actIdx === 2) {
               // Act III: Concentric tunnel zoom typography
               for (let zLayer = 0; zLayer < 3; zLayer++) {
                 const layerScale = 0.65 + ((actProgress * 1.2 + zLayer * 0.33) % 1.0) * 0.95;
                 ctx.save();
-                ctx.translate(W * 0.5, H * 0.5);
+                ctx.translate(heroCX, heroCY);
                 ctx.scale(layerScale, layerScale);
                 ctx.strokeStyle = `rgba(255, 30, 86, ${0.15 * visibility})`;
                 ctx.lineWidth = 1.6;
@@ -1819,9 +2232,10 @@
             } else {
               ctx.strokeStyle = `rgba(255, 255, 255, ${0.14 * visibility})`;
               ctx.lineWidth = 1.8;
-              ctx.strokeText(act.heroWord, W * 0.5 + trackingShift, H * 0.5 - 175 * (1.0 - introEase * 0.65));
+              const ghostY = vis.narrow ? frameW * 0.12 : 175;
+              ctx.strokeText(act.heroWord, heroCX + trackingShift, heroCY - ghostY * (1.0 - introEase * 0.65));
               ctx.strokeStyle = `rgba(${Math.round(pal.accent1[0] * 255)}, ${Math.round(pal.accent1[1] * 255)}, ${Math.round(pal.accent1[2] * 255)}, ${0.18 * visibility})`;
-              ctx.strokeText(act.heroWord, W * 0.5 - trackingShift, H * 0.5 + 175 * (1.0 - introEase * 0.65));
+              ctx.strokeText(act.heroWord, heroCX - trackingShift, heroCY + ghostY * (1.0 - introEase * 0.65));
             }
             ctx.restore();
 
@@ -1829,21 +2243,38 @@
             ctx.save();
             ctx.globalCompositeOperation = 'source-over';
             const chars = act.heroWord.split('');
-            const charFontSize = actIdx === 4 ? 118 : 108;
+            let charFontSize = Math.min(
+              actIdx === 4 ? 118 : 108,
+              frameW / Math.max(6, chars.length + 1.5)
+            );
+            if (vis.narrow) charFontSize = Math.min(charFontSize, 64);
             ctx.font = `800 ${charFontSize}px ${FONT_UI}`;
             ctx.textBaseline = 'alphabetic';
 
-            const charSpacing = 12 + actProgress * 16 + beatPulse * 5;
+            let charSpacing = (vis.narrow ? 6 : 12) + actProgress * (vis.narrow ? 8 : 16) + beatPulse * 5;
             let totalWidth = 0;
-            const charWidths = chars.map((ch) => {
+            let charWidths = chars.map((ch) => {
               const w = ctx.measureText(ch).width;
               totalWidth += w;
               return w;
             });
             totalWidth += Math.max(0, chars.length - 1) * charSpacing;
+            if (totalWidth > frameW * 0.92) {
+              const fit = (frameW * 0.92) / totalWidth;
+              charFontSize *= fit;
+              charSpacing *= fit;
+              ctx.font = `800 ${charFontSize}px ${FONT_UI}`;
+              totalWidth = 0;
+              charWidths = chars.map((ch) => {
+                const w = ctx.measureText(ch).width;
+                totalWidth += w;
+                return w;
+              });
+              totalWidth += Math.max(0, chars.length - 1) * charSpacing;
+            }
 
-            let cursorX = (W - totalWidth) * 0.5;
-            const baseHeroY = H * 0.80;
+            let cursorX = heroCX - totalWidth * 0.5;
+            const baseHeroY = clamp(frameB - (vis.narrow ? 18 : 8), frameT + frameW * 0.2, frameB);
 
             for (let i = 0; i < chars.length; i++) {
               const ch = chars[i];
@@ -1853,7 +2284,7 @@
               const cOut = 1.0 - smoothstep(2.55 + i * 0.02, 2.96, actLocalTime);
               const cAlpha = cIn * cOut;
 
-              const yOffset = (1.0 - cIn) * 68 - (1.0 - cOut) * 48;
+              const yOffset = (1.0 - cIn) * (vis.narrow ? 36 : 68) - (1.0 - cOut) * (vis.narrow ? 24 : 48);
               const shear = (1.0 - cIn) * -0.25 + (1.0 - cOut) * 0.2;
 
               ctx.save();
@@ -1881,86 +2312,121 @@
             // Subtitle under hero word
             ctx.textAlign = 'center';
             ctx.globalAlpha = visibility;
-            ctx.font = '700 18px ' + FONT_MONO;
+            ctx.font = (vis.narrow ? '700 13px ' : '700 18px ') + FONT_MONO;
             ctx.fillStyle = rgb1;
-            ctx.fillText(`[ ${act.subWord} ]`, W * 0.5, baseHeroY + 38);
+            ctx.fillText(`[ ${act.subWord} ]`, heroCX, baseHeroY + (vis.narrow ? 26 : 38));
             ctx.restore();
 
             // 5. Studio Broadcast Grid & Technical Telemetry HUD
             if (state.showHudOverlay) {
               ctx.save();
-              // Keep HUD inset so text stays readable (and clear of the right icon rail)
-              const padXLeft = 140;
-              const padXRight = 220;
-              const padY = state.showLetterbox ? 128 : 72;
+              const padXLeft = frameL;
+              const padXRight = W - frameR;
+              const padYTop = frameT;
+              const padYBot = H - frameB;
+              const cornerLen = vis.narrow ? 14 : 22;
 
               ctx.strokeStyle = 'rgba(255, 255, 255, 0.32)';
               ctx.lineWidth = 1.5;
               const corners = [
-                [padXLeft, padY, 1, 1],
-                [W - padXRight, padY, -1, 1],
-                [padXLeft, H - padY, 1, -1],
-                [W - padXRight, H - padY, -1, -1]
+                [padXLeft, padYTop, 1, 1],
+                [W - padXRight, padYTop, -1, 1],
+                [padXLeft, H - padYBot, 1, -1],
+                [W - padXRight, H - padYBot, -1, -1]
               ];
               corners.forEach(([cx, cy, dx, dy]) => {
                 ctx.beginPath();
-                ctx.moveTo(cx, cy + dy * 22);
+                ctx.moveTo(cx, cy + dy * cornerLen);
                 ctx.lineTo(cx, cy);
-                ctx.lineTo(cx + dx * 22, cy);
+                ctx.lineTo(cx + dx * cornerLen, cy);
                 ctx.stroke();
               });
 
-              ctx.font = '700 16px ' + FONT_MONO;
-              ctx.fillStyle = rgb1;
-              ctx.textAlign = 'left';
-              ctx.fillText('KINETIX // STUDIO SHOWREEL 2026', padXLeft + 14, padY + 24);
-
-              ctx.font = '500 14px ' + FONT_MONO;
-              ctx.fillStyle = 'rgba(255, 255, 255, 0.68)';
-              ctx.fillText(`${act.code}  ·  ${act.cameraSpec}`, padXLeft + 14, padY + 46);
-
-              ctx.textAlign = 'right';
-              ctx.font = '700 18px ' + FONT_MONO;
-              ctx.fillStyle = '#FFFFFF';
               const frameNum = String(Math.min(TOTAL_FRAMES, Math.floor(t * FPS))).padStart(3, '0');
-              ctx.fillText(`TC ${formatTimecode(t)}  //  FRM ${frameNum}/${TOTAL_FRAMES}`, W - padXRight - 14, padY + 24);
+              if (vis.narrow) {
+                ctx.font = '700 11px ' + FONT_MONO;
+                ctx.fillStyle = rgb1;
+                ctx.textAlign = 'left';
+                ctx.fillText('KINETIX // 2026', padXLeft + 10, padYTop + 18);
+                ctx.font = '500 10px ' + FONT_MONO;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.68)';
+                ctx.fillText(act.code, padXLeft + 10, padYTop + 34);
 
-              ctx.font = '500 13px ' + FONT_MONO;
-              ctx.fillStyle = rgb2;
-              ctx.fillText(`60.0 FPS  ·  128 BPM  ·  WEBGL + GSAP`, W - padXRight - 14, padY + 46);
+                ctx.textAlign = 'right';
+                ctx.font = '700 11px ' + FONT_MONO;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(`TC ${formatTimecode(t)}`, W - padXRight - 10, padYTop + 18);
+                ctx.font = '500 10px ' + FONT_MONO;
+                ctx.fillStyle = rgb2;
+                ctx.fillText(`FRM ${frameNum}`, W - padXRight - 10, padYTop + 34);
 
-              // Bottom-Left Live Audio / Beat Frequency Spectrum Bars
-              const barCount = 24;
-              const barBaseX = padXLeft + 14;
-              const barBaseY = H - padY - 18;
-              for (let b = 0; b < barCount; b++) {
-                const wave = Math.abs(Math.sin(t * 9.5 + b * 0.45)) * (0.35 + beatPulse * 0.65);
-                const bh = 6 + wave * 34;
-                ctx.fillStyle = b % 3 === 0 ? rgb1 : (b % 3 === 1 ? rgb2 : 'rgba(255,255,255,0.65)');
-                ctx.fillRect(barBaseX + b * 8, barBaseY - bh, 5, bh);
-              }
-
-              // Bottom-Right 5-Act Progress Segmented Pill Matrix
-              const segW = 46;
-              const segGap = 8;
-              const totalSegW = 5 * segW + 4 * segGap;
-              const startSegX = W - padXRight - 14 - totalSegW;
-              for (let a = 0; a < 5; a++) {
-                const sx = startSegX + a * (segW + segGap);
-                const sy = H - padY - 24;
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.16)';
-                ctx.fillRect(sx, sy, segW, 6);
-                if (a < actIdx) {
-                  ctx.fillStyle = rgb1;
-                  ctx.fillRect(sx, sy, segW, 6);
-                } else if (a === actIdx) {
-                  ctx.fillStyle = '#FFFFFF';
-                  ctx.fillRect(sx, sy, segW * actProgress, 6);
+                const segW = Math.min(36, (frameW - 40) / 5 - 4);
+                const segGap = 4;
+                const totalSegW = 5 * segW + 4 * segGap;
+                const startSegX = heroCX - totalSegW * 0.5;
+                const sy = frameB - 8;
+                for (let a = 0; a < 5; a++) {
+                  const sx = startSegX + a * (segW + segGap);
+                  ctx.fillStyle = 'rgba(255, 255, 255, 0.16)';
+                  ctx.fillRect(sx, sy, segW, 4);
+                  if (a < actIdx) {
+                    ctx.fillStyle = rgb1;
+                    ctx.fillRect(sx, sy, segW, 4);
+                  } else if (a === actIdx) {
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(sx, sy, segW * actProgress, 4);
+                  }
                 }
-                ctx.font = '600 11px ' + FONT_MONO;
-                ctx.textAlign = 'center';
-                ctx.fillStyle = a === actIdx ? rgb1 : 'rgba(255,255,255,0.42)';
-                ctx.fillText('0' + (a + 1), sx + segW * 0.5, sy - 6);
+              } else {
+                ctx.font = '700 16px ' + FONT_MONO;
+                ctx.fillStyle = rgb1;
+                ctx.textAlign = 'left';
+                ctx.fillText('KINETIX // STUDIO SHOWREEL 2026', padXLeft + 14, padYTop + 24);
+
+                ctx.font = '500 14px ' + FONT_MONO;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.68)';
+                ctx.fillText(`${act.code}  ·  ${act.cameraSpec}`, padXLeft + 14, padYTop + 46);
+
+                ctx.textAlign = 'right';
+                ctx.font = '700 18px ' + FONT_MONO;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(`TC ${formatTimecode(t)}  //  FRM ${frameNum}/${TOTAL_FRAMES}`, W - padXRight - 14, padYTop + 24);
+
+                ctx.font = '500 13px ' + FONT_MONO;
+                ctx.fillStyle = rgb2;
+                ctx.fillText(`60.0 FPS  ·  128 BPM  ·  WEBGL + GSAP`, W - padXRight - 14, padYTop + 46);
+
+                const barCount = 24;
+                const barBaseX = padXLeft + 14;
+                const barBaseY = H - padYBot - 18;
+                for (let b = 0; b < barCount; b++) {
+                  const wave = Math.abs(Math.sin(t * 9.5 + b * 0.45)) * (0.35 + beatPulse * 0.65);
+                  const bh = 6 + wave * 34;
+                  ctx.fillStyle = b % 3 === 0 ? rgb1 : (b % 3 === 1 ? rgb2 : 'rgba(255,255,255,0.65)');
+                  ctx.fillRect(barBaseX + b * 8, barBaseY - bh, 5, bh);
+                }
+
+                const segW = 46;
+                const segGap = 8;
+                const totalSegW = 5 * segW + 4 * segGap;
+                const startSegX = W - padXRight - 14 - totalSegW;
+                for (let a = 0; a < 5; a++) {
+                  const sx = startSegX + a * (segW + segGap);
+                  const sy = H - padYBot - 24;
+                  ctx.fillStyle = 'rgba(255, 255, 255, 0.16)';
+                  ctx.fillRect(sx, sy, segW, 6);
+                  if (a < actIdx) {
+                    ctx.fillStyle = rgb1;
+                    ctx.fillRect(sx, sy, segW, 6);
+                  } else if (a === actIdx) {
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(sx, sy, segW * actProgress, 6);
+                  }
+                  ctx.font = '600 11px ' + FONT_MONO;
+                  ctx.textAlign = 'center';
+                  ctx.fillStyle = a === actIdx ? rgb1 : 'rgba(255,255,255,0.42)';
+                  ctx.fillText('0' + (a + 1), sx + segW * 0.5, sy - 6);
+                }
               }
 
               ctx.restore();
@@ -2236,6 +2702,7 @@
         }, []);
 
         const toggleSpeedMenu = useCallback(() => {
+          setVolumeMenuOpen(false);
           setSpeedMenuOpen((open) => !open);
         }, []);
 
@@ -2281,14 +2748,71 @@
             : h('span', { className: 'kx-tip', 'aria-hidden': true }, opts.title)
         );
 
-        return h('div', {
-          className: 'relative h-[100dvh] w-full overflow-hidden bg-black text-[#F4F4F6] select-none',
-          onMouseUp: handleStageMouseUp,
-          onClick: () => {
-            if (speedMenuOpen) setSpeedMenuOpen(false);
-            if (mobileRailOpen) setMobileRailOpen(false);
-          }
+        const volumeMenuNode = h('div', {
+          className: 'volume-menu',
+          role: 'dialog',
+          'aria-label': '調整音量',
+          onClick: (e) => e.stopPropagation(),
+          onPointerDown: (e) => e.stopPropagation()
         },
+          h('div', { className: 'volume-menu-label' },
+            h('span', null, 'VOLUME'),
+            h('span', null, `${Math.round(audioVolume * 100)}%`)
+          ),
+          h('input', {
+            type: 'range',
+            className: 'volume-slider',
+            min: 0,
+            max: 100,
+            step: 1,
+            value: Math.round(audioVolume * 100),
+            'aria-valuemin': 0,
+            'aria-valuemax': 100,
+            'aria-valuenow': Math.round(audioVolume * 100),
+            'aria-label': '音量',
+            onChange: (e) => handleVolumeChange(Number(e.target.value) / 100),
+            onInput: (e) => handleVolumeChange(Number(e.target.value) / 100)
+          }),
+          h('button', {
+            type: 'button',
+            className: 'volume-mute',
+            onClick: () => {
+              setAudioEnabled(false);
+              setVolumeMenuOpen(false);
+            }
+          }, 'MUTE')
+        );
+
+        const speedMenuNode = h('div', {
+          className: 'speed-menu',
+          role: 'menu',
+          'aria-label': '選擇播放速度 0.5x 到 2x',
+          onClick: (e) => e.stopPropagation(),
+          onPointerDown: (e) => e.stopPropagation()
+        },
+          SPEED_PRESETS.map((rate) =>
+            h('button', {
+              key: rate,
+              type: 'button',
+              role: 'menuitemradio',
+              'aria-checked': playbackRate === rate,
+              className: `speed-option ${playbackRate === rate ? 'is-active' : ''}`,
+              onClick: () => pickSpeed(rate)
+            }, formatSpeedLabel(rate))
+          )
+        );
+
+        return h(React.Fragment, null,
+          h('div', {
+            className: 'relative h-[100dvh] w-full overflow-hidden bg-black text-[#F4F4F6] select-none',
+            onMouseUp: handleStageMouseUp,
+            onClick: (e) => {
+              if (e.target.closest('.icon-rail-shell') || e.target.closest('.speed-menu') || e.target.closest('.volume-menu')) return;
+              if (speedMenuOpen) setSpeedMenuOpen(false);
+              if (volumeMenuOpen) setVolumeMenuOpen(false);
+              if (mobileRailOpen) setMobileRailOpen(false);
+            }
+          },
           h('canvas', {
             id: 'master-stage',
             ref: masterCanvasRef,
@@ -2305,7 +2829,7 @@
           }),
 
           h('div', {
-            className: 'absolute top-4 left-4 z-30 flex items-center gap-3 pointer-events-none'
+            className: 'brand-lockup'
           },
             h('img', {
               src: './assets/brand/logo.png',
@@ -2331,108 +2855,159 @@
             className: `icon-rail-shell ${mobileRailOpen ? 'is-open' : ''}`.trim(),
             onClick: (e) => e.stopPropagation()
           },
-            h('button', {
-              type: 'button',
-              className: `icon-btn rail-toggle glass-panel ${mobileRailOpen ? 'is-on' : ''}`.trim(),
-              'aria-label': mobileRailOpen ? '縮合控制列' : '展開控制列',
-              'aria-expanded': mobileRailOpen,
-              onClick: () => {
-                setMobileRailOpen((open) => {
-                  const next = !open;
-                  if (!next) setSpeedMenuOpen(false);
-                  return next;
-                });
-              }
-            },
-              Icon({ d: mobileRailOpen ? ICONS.chevronDown : ICONS.panel, size: 18 }),
-              h('span', { className: 'kx-tip', 'aria-hidden': true }, mobileRailOpen ? '縮合' : '控制列')
-            ),
-            h('div', {
-              className: 'icon-rail glass-panel'
-            },
-              iconBtn({
-                title: isPlaying ? '暫停' : '播放',
-                icon: isPlaying ? ICONS.pause : ICONS.play,
-                on: isPlaying,
-                onClick: handleTogglePlay
-              }),
-              iconBtn({
-                title: isRewinding ? '倒轉中…' : '加速倒轉重播',
-                icon: ICONS.restart,
-                on: isRewinding,
-                onClick: handleRestart
-              }),
-              iconBtn({
-                title: audioEnabled ? '關閉音軌' : '開啟音軌',
-                icon: audioEnabled ? ICONS.audioOn : ICONS.audioOff,
-                on: audioEnabled,
-                onClick: handleToggleAudio
-              }),
-              iconBtn({
-                title: cameraMode === 'director' ? '切換自由視角' : '重置導演運鏡',
-                icon: ICONS.camera,
-                on: cameraMode !== 'director',
-                onClick: toggleCameraMode
-              }),
-              iconBtn({
-                title: showHudOverlay ? '關閉 HUD' : '開啟 HUD',
-                icon: ICONS.hud,
-                on: showHudOverlay,
-                onClick: () => setShowHudOverlay((v) => !v)
-              }),
-              iconBtn({
-                title: showLetterbox ? '關閉遮幅' : '開啟遮幅',
-                icon: ICONS.frame,
-                on: showLetterbox,
-                onClick: () => setShowLetterbox((v) => !v)
-              }),
-              iconBtn({
-                title: '下一段落',
-                icon: ICONS.acts,
-                tip: false,
-                onClick: cycleAct
-              }),
-              h('div', {
-                className: 'relative',
-                onClick: (e) => e.stopPropagation()
-              },
+            h('div', { className: 'mobile-dock' },
+              h('div', { className: 'rail-carousel' },
                 h('button', {
                   type: 'button',
-                  'aria-label': `播放速度 ${formatSpeedLabel(playbackRate)}`,
-                  'aria-expanded': speedMenuOpen,
-                  onClick: toggleSpeedMenu,
-                  className: `icon-btn speed-btn ${playbackRate !== 1 || speedMenuOpen ? 'is-on' : ''}`.trim()
-                }, formatSpeedLabel(playbackRate)),
-                speedMenuOpen && h('div', {
-                  className: 'speed-menu',
-                  role: 'menu',
-                  'aria-label': '選擇播放速度 0.5x 到 2x'
+                  className: 'rail-handle',
+                  'aria-label': '縮合控制列',
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    setSpeedMenuOpen(false);
+                    setVolumeMenuOpen(false);
+                    setMobileRailOpen(false);
+                  }
                 },
-                  SPEED_PRESETS.map((rate) =>
+                  h('span', { className: 'rail-handle-bar', 'aria-hidden': true })
+                ),
+                h('div', {
+                  ref: iconRailRef,
+                  className: 'icon-rail glass-panel',
+                  role: 'toolbar',
+                  'aria-label': '播放控制',
+                  onScroll: (e) => {
+                    const el = e.currentTarget;
+                    const page = Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
+                    setRailPage(Math.max(0, Math.min(2, page)));
+                  }
+                },
+                  h('div', { className: 'rail-page' },
+                    iconBtn({
+                      title: isPlaying ? '暫停' : '播放',
+                      icon: isPlaying ? ICONS.pause : ICONS.play,
+                      on: isPlaying,
+                      onClick: handleTogglePlay
+                    }),
+                    iconBtn({
+                      title: isRewinding ? '倒轉中…' : '加速倒轉重播',
+                      icon: ICONS.restart,
+                      on: isRewinding,
+                      onClick: handleRestart
+                    }),
+                    h('div', {
+                      className: 'relative',
+                      onClick: (e) => e.stopPropagation()
+                    },
+                      h('button', {
+                        type: 'button',
+                        'aria-label': audioEnabled ? `音量 ${Math.round(audioVolume * 100)}%` : '開啟音軌',
+                        'aria-expanded': volumeMenuOpen,
+                        onClick: handleToggleAudio,
+                        className: `icon-btn ${audioEnabled || volumeMenuOpen ? 'is-on' : ''}`.trim()
+                      },
+                        Icon({ d: audioEnabled ? ICONS.audioOn : ICONS.audioOff }),
+                        h('span', { className: 'kx-tip', 'aria-hidden': true }, audioEnabled ? `音量 ${Math.round(audioVolume * 100)}%` : '開啟音軌')
+                      ),
+                      !isMobileUi && volumeMenuOpen && volumeMenuNode
+                    ),
+                    iconBtn({
+                      title: cameraMode === 'director' ? '切換自由視角' : '重置導演運鏡',
+                      icon: ICONS.camera,
+                      on: cameraMode !== 'director',
+                      onClick: toggleCameraMode
+                    })
+                  ),
+                  h('div', { className: 'rail-page' },
+                    iconBtn({
+                      title: showHudOverlay ? '關閉 HUD' : '開啟 HUD',
+                      icon: ICONS.hud,
+                      on: showHudOverlay,
+                      onClick: () => setShowHudOverlay((v) => !v)
+                    }),
+                    iconBtn({
+                      title: showLetterbox ? '關閉遮幅' : '開啟遮幅',
+                      icon: ICONS.frame,
+                      on: showLetterbox,
+                      onClick: () => setShowLetterbox((v) => !v)
+                    }),
+                    iconBtn({
+                      title: '下一段落',
+                      icon: ICONS.acts,
+                      tip: false,
+                      onClick: cycleAct
+                    }),
+                    h('div', {
+                      className: 'relative',
+                      onClick: (e) => e.stopPropagation()
+                    },
+                      h('button', {
+                        type: 'button',
+                        'aria-label': `播放速度 ${formatSpeedLabel(playbackRate)}`,
+                        'aria-expanded': speedMenuOpen,
+                        onClick: toggleSpeedMenu,
+                        className: `icon-btn speed-btn ${playbackRate !== 1 || speedMenuOpen ? 'is-on' : ''}`.trim()
+                      }, formatSpeedLabel(playbackRate)),
+                      !isMobileUi && speedMenuOpen && speedMenuNode
+                    )
+                  ),
+                  h('div', { className: 'rail-page' },
+                    iconBtn({
+                      title: `調色 · ${(LUT_PRESETS.find((lut) => lut.id === selectedLut) || LUT_PRESETS[0]).name}`,
+                      icon: ICONS.settings,
+                      on: selectedLut !== 'studio',
+                      onClick: cycleLut
+                    }),
+                    iconBtn({
+                      title: isRecording ? '結束錄製' : '匯出 15s 影片',
+                      icon: ICONS.export,
+                      on: isRecording,
+                      danger: isRecording,
+                      onClick: isRecording ? handleStopRecordingEarly : handleStartVideoExport
+                    }),
+                    h('div', { className: 'rail-page-spacer', 'aria-hidden': true }),
+                    h('div', { className: 'rail-page-spacer', 'aria-hidden': true })
+                  )
+                ),
+                h('div', { className: 'rail-dots', role: 'tablist', 'aria-label': '控制分頁' },
+                  [0, 1, 2].map((page) =>
                     h('button', {
-                      key: rate,
+                      key: page,
                       type: 'button',
-                      role: 'menuitemradio',
-                      'aria-checked': playbackRate === rate,
-                      className: `speed-option ${playbackRate === rate ? 'is-active' : ''}`,
-                      onClick: () => pickSpeed(rate)
-                    }, formatSpeedLabel(rate))
+                      className: `rail-dot ${railPage === page ? 'is-on' : ''}`.trim(),
+                      'aria-label': `第 ${page + 1} 頁`,
+                      'aria-current': railPage === page ? 'true' : undefined,
+                      onClick: (e) => {
+                        e.stopPropagation();
+                        const rail = iconRailRef.current;
+                        if (!rail) return;
+                        rail.scrollTo({ left: page * rail.clientWidth, behavior: 'smooth' });
+                        setRailPage(page);
+                      }
+                    })
                   )
                 )
               ),
-              iconBtn({
-                title: `調色 · ${(LUT_PRESETS.find((lut) => lut.id === selectedLut) || LUT_PRESETS[0]).name}`,
-                icon: ICONS.settings,
-                on: selectedLut !== 'studio',
-                onClick: cycleLut
-              }),
-              iconBtn({
-                title: isRecording ? '結束錄製' : '匯出 15s 影片',
-                icon: ICONS.export,
-                on: isRecording,
-                danger: isRecording,
-                onClick: isRecording ? handleStopRecordingEarly : handleStartVideoExport
-              })
+              h('button', {
+                type: 'button',
+                className: `icon-btn rail-toggle ${mobileRailOpen ? 'is-on' : ''}`.trim(),
+                'aria-label': mobileRailOpen ? '縮合控制列' : '展開控制列',
+                'aria-expanded': mobileRailOpen,
+                onClick: (e) => {
+                  e.stopPropagation();
+                  setMobileRailOpen((open) => {
+                    const next = !open;
+                    if (!next) {
+                      setSpeedMenuOpen(false);
+                      setVolumeMenuOpen(false);
+                    }
+                    return next;
+                  });
+                }
+              },
+                Icon({ d: mobileRailOpen ? ICONS.chevronDown : ICONS.panel, size: 18 }),
+                !mobileRailOpen && h('span', { className: 'rail-toggle-label', 'aria-hidden': true }, 'CTRL'),
+                h('span', { className: 'kx-tip', 'aria-hidden': true }, mobileRailOpen ? '縮合' : '控制列')
+              )
             )
           ),
 
@@ -2493,6 +3068,13 @@
                   )
             )
           )
+          ),
+          isMobileUi && volumeMenuOpen
+            ? ReactDOM.createPortal(volumeMenuNode, document.body)
+            : null,
+          isMobileUi && speedMenuOpen
+            ? ReactDOM.createPortal(speedMenuNode, document.body)
+            : null
         );
       }
 
