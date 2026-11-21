@@ -137,12 +137,32 @@
       visibility: visible;
       transform: translate(0, -50%);
     }
+    .icon-rail-shell {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
     .icon-rail {
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding: 10px;
       border-radius: 18px;
+      transform-origin: top right;
+      transition:
+        opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        max-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        padding 0.28s ease,
+        border-color 0.28s ease;
+    }
+    .rail-toggle {
+      display: none;
     }
     .speed-btn {
       width: 44px;
@@ -169,6 +189,69 @@
       box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
       z-index: 70;
       min-width: 72px;
+    }
+    @media (max-width: 768px) {
+      .icon-rail-shell {
+        top: auto;
+        right: 50%;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        left: auto;
+        transform: translateX(50%);
+        align-items: center;
+        flex-direction: column-reverse;
+        width: min(100vw - 20px, 560px);
+      }
+      .rail-toggle {
+        display: inline-flex;
+        flex-shrink: 0;
+      }
+      .icon-rail {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 6px;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        transform-origin: bottom center;
+        max-height: 0;
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+        padding-top: 0;
+        padding-bottom: 0;
+        border-color: transparent;
+        pointer-events: none;
+      }
+      .icon-rail::-webkit-scrollbar {
+        display: none;
+      }
+      .icon-rail-shell.is-open .icon-rail {
+        max-height: 72px;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        padding: 10px;
+        border-color: rgba(255, 255, 255, 0.1);
+        pointer-events: auto;
+      }
+      .icon-rail-shell:not(.is-open) .icon-rail {
+        margin: 0;
+      }
+      .kx-tip {
+        display: none;
+      }
+      .speed-menu {
+        right: 50%;
+        left: auto;
+        top: auto;
+        bottom: calc(100% + 10px);
+        transform: translateX(50%);
+        flex-direction: row;
+        min-width: 0;
+      }
     }
     .speed-option {
       border: 1px solid rgba(255,255,255,0.1);
@@ -256,7 +339,10 @@
         keys: 'M3 7h18v4H3zm0 6h12v4H3z',
         info: 'M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zm0-14v.01M12 11v5',
         close: 'M18 6L6 18M6 6l12 12',
-        speed: 'M13 2L4 14h7l-1 8 9-12h-7l1-8z'
+        speed: 'M13 2L4 14h7l-1 8 9-12h-7l1-8z',
+        chevronUp: 'M18 15l-6-6-6 6',
+        chevronDown: 'M6 9l6 6 6-6',
+        panel: 'M4 6h16M4 12h16M4 18h10'
       };
 
       // =========================================================================
@@ -1024,6 +1110,7 @@
         const [isPlaying, setIsPlaying] = useState(true);
         const [isRewinding, setIsRewinding] = useState(false);
         const [speedMenuOpen, setSpeedMenuOpen] = useState(false);
+        const [mobileRailOpen, setMobileRailOpen] = useState(false);
         const isLooping = true;
         const [playbackRate, setPlaybackRate] = useState(1.0);
         const SPEED_PRESETS = [0.5, 1, 1.5, 2];
@@ -2199,6 +2286,7 @@
           onMouseUp: handleStageMouseUp,
           onClick: () => {
             if (speedMenuOpen) setSpeedMenuOpen(false);
+            if (mobileRailOpen) setMobileRailOpen(false);
           }
         },
           h('canvas', {
@@ -2240,91 +2328,112 @@
           ),
 
           h('div', {
-            className: 'absolute top-4 right-4 z-40 icon-rail glass-panel'
+            className: `icon-rail-shell ${mobileRailOpen ? 'is-open' : ''}`.trim(),
+            onClick: (e) => e.stopPropagation()
           },
-            iconBtn({
-              title: isPlaying ? '暫停' : '播放',
-              icon: isPlaying ? ICONS.pause : ICONS.play,
-              on: isPlaying,
-              onClick: handleTogglePlay
-            }),
-            iconBtn({
-              title: isRewinding ? '倒轉中…' : '加速倒轉重播',
-              icon: ICONS.restart,
-              on: isRewinding,
-              onClick: handleRestart
-            }),
-            iconBtn({
-              title: audioEnabled ? '關閉音軌' : '開啟音軌',
-              icon: audioEnabled ? ICONS.audioOn : ICONS.audioOff,
-              on: audioEnabled,
-              onClick: handleToggleAudio
-            }),
-            iconBtn({
-              title: cameraMode === 'director' ? '切換自由視角' : '重置導演運鏡',
-              icon: ICONS.camera,
-              on: cameraMode !== 'director',
-              onClick: toggleCameraMode
-            }),
-            iconBtn({
-              title: showHudOverlay ? '關閉 HUD' : '開啟 HUD',
-              icon: ICONS.hud,
-              on: showHudOverlay,
-              onClick: () => setShowHudOverlay((v) => !v)
-            }),
-            iconBtn({
-              title: showLetterbox ? '關閉遮幅' : '開啟遮幅',
-              icon: ICONS.frame,
-              on: showLetterbox,
-              onClick: () => setShowLetterbox((v) => !v)
-            }),
-            iconBtn({
-              title: '下一段落',
-              icon: ICONS.acts,
-              tip: false,
-              onClick: cycleAct
-            }),
-            h('div', {
-              className: 'relative',
-              onClick: (e) => e.stopPropagation()
+            h('button', {
+              type: 'button',
+              className: `icon-btn rail-toggle glass-panel ${mobileRailOpen ? 'is-on' : ''}`.trim(),
+              'aria-label': mobileRailOpen ? '縮合控制列' : '展開控制列',
+              'aria-expanded': mobileRailOpen,
+              onClick: () => {
+                setMobileRailOpen((open) => {
+                  const next = !open;
+                  if (!next) setSpeedMenuOpen(false);
+                  return next;
+                });
+              }
             },
-              h('button', {
-                type: 'button',
-                'aria-label': `播放速度 ${formatSpeedLabel(playbackRate)}`,
-                'aria-expanded': speedMenuOpen,
-                onClick: toggleSpeedMenu,
-                className: `icon-btn speed-btn ${playbackRate !== 1 || speedMenuOpen ? 'is-on' : ''}`.trim()
-              }, formatSpeedLabel(playbackRate)),
-              speedMenuOpen && h('div', {
-                className: 'speed-menu',
-                role: 'menu',
-                'aria-label': '選擇播放速度 0.5x 到 2x'
-              },
-                SPEED_PRESETS.map((rate) =>
-                  h('button', {
-                    key: rate,
-                    type: 'button',
-                    role: 'menuitemradio',
-                    'aria-checked': playbackRate === rate,
-                    className: `speed-option ${playbackRate === rate ? 'is-active' : ''}`,
-                    onClick: () => pickSpeed(rate)
-                  }, formatSpeedLabel(rate))
-                )
-              )
+              Icon({ d: mobileRailOpen ? ICONS.chevronDown : ICONS.panel, size: 18 }),
+              h('span', { className: 'kx-tip', 'aria-hidden': true }, mobileRailOpen ? '縮合' : '控制列')
             ),
-            iconBtn({
-              title: `調色 · ${(LUT_PRESETS.find((lut) => lut.id === selectedLut) || LUT_PRESETS[0]).name}`,
-              icon: ICONS.settings,
-              on: selectedLut !== 'studio',
-              onClick: cycleLut
-            }),
-            iconBtn({
-              title: isRecording ? '結束錄製' : '匯出 15s 影片',
-              icon: ICONS.export,
-              on: isRecording,
-              danger: isRecording,
-              onClick: isRecording ? handleStopRecordingEarly : handleStartVideoExport
-            })
+            h('div', {
+              className: 'icon-rail glass-panel'
+            },
+              iconBtn({
+                title: isPlaying ? '暫停' : '播放',
+                icon: isPlaying ? ICONS.pause : ICONS.play,
+                on: isPlaying,
+                onClick: handleTogglePlay
+              }),
+              iconBtn({
+                title: isRewinding ? '倒轉中…' : '加速倒轉重播',
+                icon: ICONS.restart,
+                on: isRewinding,
+                onClick: handleRestart
+              }),
+              iconBtn({
+                title: audioEnabled ? '關閉音軌' : '開啟音軌',
+                icon: audioEnabled ? ICONS.audioOn : ICONS.audioOff,
+                on: audioEnabled,
+                onClick: handleToggleAudio
+              }),
+              iconBtn({
+                title: cameraMode === 'director' ? '切換自由視角' : '重置導演運鏡',
+                icon: ICONS.camera,
+                on: cameraMode !== 'director',
+                onClick: toggleCameraMode
+              }),
+              iconBtn({
+                title: showHudOverlay ? '關閉 HUD' : '開啟 HUD',
+                icon: ICONS.hud,
+                on: showHudOverlay,
+                onClick: () => setShowHudOverlay((v) => !v)
+              }),
+              iconBtn({
+                title: showLetterbox ? '關閉遮幅' : '開啟遮幅',
+                icon: ICONS.frame,
+                on: showLetterbox,
+                onClick: () => setShowLetterbox((v) => !v)
+              }),
+              iconBtn({
+                title: '下一段落',
+                icon: ICONS.acts,
+                tip: false,
+                onClick: cycleAct
+              }),
+              h('div', {
+                className: 'relative',
+                onClick: (e) => e.stopPropagation()
+              },
+                h('button', {
+                  type: 'button',
+                  'aria-label': `播放速度 ${formatSpeedLabel(playbackRate)}`,
+                  'aria-expanded': speedMenuOpen,
+                  onClick: toggleSpeedMenu,
+                  className: `icon-btn speed-btn ${playbackRate !== 1 || speedMenuOpen ? 'is-on' : ''}`.trim()
+                }, formatSpeedLabel(playbackRate)),
+                speedMenuOpen && h('div', {
+                  className: 'speed-menu',
+                  role: 'menu',
+                  'aria-label': '選擇播放速度 0.5x 到 2x'
+                },
+                  SPEED_PRESETS.map((rate) =>
+                    h('button', {
+                      key: rate,
+                      type: 'button',
+                      role: 'menuitemradio',
+                      'aria-checked': playbackRate === rate,
+                      className: `speed-option ${playbackRate === rate ? 'is-active' : ''}`,
+                      onClick: () => pickSpeed(rate)
+                    }, formatSpeedLabel(rate))
+                  )
+                )
+              ),
+              iconBtn({
+                title: `調色 · ${(LUT_PRESETS.find((lut) => lut.id === selectedLut) || LUT_PRESETS[0]).name}`,
+                icon: ICONS.settings,
+                on: selectedLut !== 'studio',
+                onClick: cycleLut
+              }),
+              iconBtn({
+                title: isRecording ? '結束錄製' : '匯出 15s 影片',
+                icon: ICONS.export,
+                on: isRecording,
+                danger: isRecording,
+                onClick: isRecording ? handleStopRecordingEarly : handleStartVideoExport
+              })
+            )
           ),
 
           exportModalOpen && h('div', {
